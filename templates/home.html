@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h4 mb-0">Welcome, {{ user.get_full_name|default:user.username }}</h1>
+    <p class="text-muted small mb-0">ERIMS — Week 1 build. Signed in as <strong>{{ user_role|default:"no role assigned" }}</strong>.</p>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="stat-label">Locations</div><div class="stat-value">{{ location_count }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="stat-label">Supplies</div><div class="stat-value">{{ supply_count }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="stat-label">Stock batches</div><div class="stat-value">{{ batch_count }}</div>
+  </div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="stat-label">Active emergencies</div><div class="stat-value">{{ active_event_count }}</div>
+  </div></div></div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white fw-semibold">Recent stock transactions</div>
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 align-middle">
+      <thead class="table-light">
+        <tr><th>When</th><th>Type</th><th>Supply</th><th class="text-end">Qty</th><th>From</th><th>To</th><th>By</th></tr>
+      </thead>
+      <tbody>
+        {% for t in recent_transactions %}
+        <tr>
+          <td class="small text-muted">{{ t.created_at|date:"d M Y, H:i" }}</td>
+          <td><span class="badge txn-{{ t.transaction_type|lower }}">{{ t.get_transaction_type_display }}</span></td>
+          <td>{{ t.supply.name }}</td>
+          <td class="text-end">{{ t.quantity }}</td>
+          <td>{{ t.from_location.code|default:"—" }}</td>
+          <td>{{ t.to_location.code|default:"—" }}</td>
+          <td class="small">{{ t.performed_by.username|default:"system" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No transactions yet. Run <code>python manage.py seed_data</code>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
